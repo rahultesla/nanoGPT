@@ -1,5 +1,6 @@
 import os
 import requests
+import pickle
 
 def download_data(url, file_path):
     if os.path.exists(file_path):
@@ -12,6 +13,9 @@ def read_data(file_path):
         data = file.read()
     return data
 
+def path(filename):
+    work_dir = os.path.dirname(__file__)
+    return os.path.join(work_dir, filename)
 
 def split_data(data,ratio):
     data_size = len(data)
@@ -24,9 +28,18 @@ class Encoder():
         chars = sorted(list(set(data)))
         self.stoi = {ch: i for i, ch in enumerate(chars)}
         self.itos = {i: ch for i, ch in enumerate(chars)}
-
+        self.vocab_size = len(chars)
+        self.metadata = {
+            'vocab_size': self.vocab_size,
+            'itos': self.itos,
+            'stoi': self.stoi,
+        }
     def encode(self,text:str) -> list[int]:
         return [self.stoi[c] for c in text]
     def decode(self,encoded_data:list[int]) -> str:
         return ''.join([self.itos[i] for i in encoded_data])
+
+    def save(self, filepath) -> None:
+        with open(filepath, 'wb') as file:
+            pickle.dump(self.metadata, file)
 

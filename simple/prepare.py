@@ -4,16 +4,13 @@ So instead of encoding with GPT-2 BPE tokens, we just map characters to ints.
 Will save train.bin, val.bin containing the ids, and meta.pkl containing the
 encoder and decoder and some other related info.
 """
-import os
-import pickle
-from utils import download_data, read_data, split_data,Encoder
+
+
+from utils import download_data, read_data, split_data,path,Encoder
 import numpy as np
 
 
-
-
-work_dir = os.path.dirname(__file__)
-input_file_path = os.path.join(work_dir, 'input.txt')
+input_file_path = path('input.txt')
 DATA_URL = 'https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt'
 
 # download the tiny shakespeare dataset
@@ -38,14 +35,8 @@ train_ids = np.array(train_ids, dtype=np.uint16)
 val_ids = np.array(val_ids, dtype=np.uint16)
 
 # export to bin files
-train_ids.tofile(os.path.join(work_dir, 'train.bin'))
-val_ids.tofile(os.path.join(work_dir, 'val.bin'))
+train_ids.tofile(path('train.bin'))
+val_ids.tofile(path('val.bin'))
 
 # save the meta information as well, to help us encode/decode later
-meta = {
-    'vocab_size': vocab_size,
-    'itos': encoder.itos,
-    'stoi': encoder.stoi, 
-}
-with open(os.path.join(os.path.dirname(__file__), 'meta.pkl'), 'wb') as f:
-    pickle.dump(meta, f)
+encoder.save(path('meta.pkl'))
